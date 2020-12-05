@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="newstyleAA.css">
+
+    <title>IoT Dashboard</title>
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="topnav">
+        <a href="#">Home</a>
+        <a href="about.html">About The Project</a>
+      </div>
+
+      <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+      <div class="content">
+        <h2>Grafik Data Cuaca Lembang</h2>
+        <p align="justify">Selamat datang, website ini adalah contoh pengumpulan data cuaca di Lembang, lokasinya di Desa Jayagiri.
+          Data akan dikirimkan ke server setiap 5 menit, namun ketika ada gangguan koneksi maka akan terhambat pengirimannya, terlihat di grafik ada data yang kosong.
+          Panduan singkat pembuatan Dashboard dan Alat ini akan dibuat segera.
+          <br><br>Alat terbuat dari ESP8266 (Mikrokontroller WiFi) dan Sensor BME280 (Temperatur, Tekanan dan Kelembapan).
+          <br><br>
+          Terimakasih sudah mampir.
+          <br /><br />
+          <button class="button" onclick="location.href='#bmkgSat'" type="button">
+         Ke Bagian Citra Satelit</button>
+        </p>
+
+
+        <div class="data-container">
+          <iframe src="https://thingspeak.com/channels/429395/charts/1?width=auto&height=253&bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15&title=Temperatur+Udara">
+            <p>Your browser does not support iframes.</p>
+          </iframe>
+        </div>
+
+        <div class="data-container">
+          <iframe src="https://thingspeak.com/channels/429395/charts/2?width=auto&height=253&bgcolor=%23ffffff&color=%235ef441&dynamic=true&results=60&type=line&update=15&title=Kelembapan+Udara">
+            <p>Your browser does not support iframes.</p>
+          </iframe>
+        </div>
+
+        <div class="data-container">
+          <iframe src="https://thingspeak.com/channels/429395/charts/3?width=auto&height=253&bgcolor=%23ffffff&color=%233C1FDE&dynamic=true&results=60&type=line&update=15&title=Tekanan+Atmosfer">
+            <p>Your browser does not support iframes.</p>
+          </iframe>
+        </div>
+
+        <p align="justify">Kunjungi channel Thingspeak <b><a href="https://thingspeak.com/channels/429395">disini</a></b>.
+        </p>
+
+      </div>
+
+      <div class="content" id="sateliteDIV">
+        <h2 id="bmkgSat">Citra Satelit dari BMKG</h2>
+        <p align="justify">Disini saya akan mencoba menampilkan data Satelit BMKG dengan sedikit pengolahan menggunakan javascript untuk menandai lokasi Sensor
+          dan memfokuskan gambar pada lokasi yang kita inginkan. Data milik BMKG saya hanya mengambil dari website.
+          <br><br>Konversi waktu UTC ke WIB adalah dengan menambahkan 7 Jam, contoh <b>04:00 UTC</b> adalah <b>11:00 WIB</b>.
+        </p>
+
+
+
+        <p>Citra satelit Himawari-8 IR Enhanced - Jawa Barat </p>
+
+        <canvas id="myCanvas2" width="500" height="500" style="border:1px solid #d3d3d3;">
+        Your browser does not support the HTML5 canvas tag.
+        </canvas>
+
+
+        <p>Citra satelit dibesarkan, Radius lingkaran ~9.25 km dan pusat lingkaran pada lokasi Sensor (-6.8 LS, 107.6 BT) di Lembang. </p>
+        <canvas id="myCanvas" width="300" height="300" style="border:1px solid #d3d3d3;">
+        Your browser does not support the HTML5 canvas tag.
+        </canvas>
+
+
+
+
+      </div>
+
+      <div class="footer">
+        <p><i>Dashboard V1 Updated: 30 November 2020</i></p>
+        <h2>Made with <span style="color: #e25555;">♥</span> from Indonesia</h2>
+      </div>
+    </div>
+
+
+    <script>
+
+      var img = new Image();
+      img.onload = function(){
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        var wdth = document.querySelector('div').clientWidth-30;
+        if (wdth > 600) {
+            wdth=500;
+        }
+        var wdthS = wdth+"px";
+        c.style.width  = wdthS;
+        c.style.height = wdthS;
+        ctx.drawImage(img,
+            -586, -686
+           //-584,-666
+         );
+         var ctx1 = c.getContext("2d");
+         ctx1.beginPath();
+         ctx1.lineWidth = 1;
+         ctx1.arc(
+         148, 130, //circle center point x,y on canvas
+         40, //radius
+         0, 2 * Math.PI); //full circle 0,2
+         ctx1.stroke();
+
+         var ctx2 = c.getContext("2d");
+         ctx2.font="10px Comic Sans MS";
+         ctx2.fillStyle = "black";
+         ctx2.textAlign = "center";
+         ctx2.fillText("Bandung", 160, 195);
+         //ctx2.fillText("Lembang", 148, 130);
+      };
+      img.src = "https://inderaja.bmkg.go.id/IMAGE/HIMA/H08_EH_Jabar.png?id=70192pf55k65ooxyg78mpi1";
+
+      //MAIN satelite Data
+      var img2 = new Image();
+      img2.onload = function(){
+        var c = document.getElementById("myCanvas2");
+        //var wdth = "300px";
+        var wdth = document.querySelector('div').clientWidth-30;
+        if (wdth > 600) {
+            wdth=500;
+        }
+        var wdthS = wdth+"px";
+        c.style.width  = wdthS;
+        c.style.height = wdthS;
+        var ctx = c.getContext("2d");
+        ctx.drawImage(img,
+            0, 0,
+            500,500 //cavas resize image
+           //-584,-666
+         );
+
+         var ctx1 = c.getContext("2d");
+         ctx1.beginPath();
+         ctx1.lineWidth = 1;
+         ctx1.arc(
+         267, 297, //circle center point x,y on canvas
+         14.7, //radius
+         0, 2 * Math.PI); //full circle 0,2
+         ctx1.stroke();
+
+         var ctx2 = c.getContext("2d");
+         ctx2.font="13px Comic Sans MS";
+         ctx2.fillStyle = "black";
+         ctx2.textAlign = "left";
+         ctx2.fillText("Zoom", 213, 245);
+         // ctx2.fillText("Lembang", 148, 130);
+
+        var ctx3 = c.getContext("2d");
+        ctx3.beginPath();
+        ctx3.lineWidth = 1;
+        ctx3.rect(213, 250, 109, 109);
+        ctx3.stroke();
+      };
+      img2.src = "https://inderaja.bmkg.go.id/IMAGE/HIMA/H08_EH_Jabar.png?id=70192pf55k65ooxyg78mpi1";
+
+      var mybutton = document.getElementById("myBtn");
+      // When the user scrolls down 20px from the top of the document, show the button
+      window.onscroll = function() {scrollFunction()};
+
+      function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+          mybutton.style.display = "block";
+        } else {
+          mybutton.style.display = "none";
+        }
+      }
+
+      // When the user clicks on the button, scroll to the top of the document
+      function topFunction() {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      }
+
+    </script>
+
+  </body>
+</html>
